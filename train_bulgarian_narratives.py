@@ -40,7 +40,7 @@ def train_with_repeated_kfold_and_save_ensemble(texts, labels):
     dataset = Dataset.from_dict({"text": texts, "label": labels.tolist()})
     dataset = dataset.map(tokenize, batched=True)
 
-    rskf = RepeatedStratifiedKFold(n_splits=5, n_repeats=5, random_state=42)
+    rskf = RepeatedStratifiedKFold(n_splits=5, n_repeats=2, random_state=42)
     labels_flat = labels.argmax(axis=1)
 
     all_predictions = []
@@ -70,6 +70,7 @@ def train_with_repeated_kfold_and_save_ensemble(texts, labels):
             load_best_model_at_end=True,
             metric_for_best_model="f1_macro",
             lr_scheduler_type="linear",
+            logging_steps=100,
             fp16=True
         )
 
@@ -80,7 +81,7 @@ def train_with_repeated_kfold_and_save_ensemble(texts, labels):
             eval_dataset=val_dataset,
             tokenizer=tokenizer,
             compute_metrics=compute_metrics,
-            callbacks=[EarlyStoppingCallback(early_stopping_patience=5)]
+            callbacks=[EarlyStoppingCallback(early_stopping_patience=10)]
         )
 
         trainer.train()

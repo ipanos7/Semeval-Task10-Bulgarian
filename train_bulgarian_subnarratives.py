@@ -70,6 +70,7 @@ def train_with_repeated_kfold_and_save_ensemble(texts, labels):
             load_best_model_at_end=True,
             metric_for_best_model="f1_macro",
             lr_scheduler_type="linear",
+            logging_steps=100,
             fp16=True
         )
 
